@@ -1,0 +1,666 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organize seus Gastos</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .tela {
+            display: none;
+            min-height: 100vh;
+            width: 100%;
+            padding: 25px;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .ativa {
+            display: flex;
+        }
+
+        /* TELA 1: BOAS-VINDAS */
+        #inicio {
+            background-color: #064E3B;
+            color: #86EFAC;
+            cursor: pointer;
+        }
+
+        #inicio h1 {
+            font-size: 42px;
+        }
+
+        #inicio p {
+            margin-top: 15px;
+            color: white;
+        }
+
+        /* TELA 2: APRESENTAÇÃO */
+        #financas {
+            background-color: #064E3B;
+            cursor: pointer;
+        }
+
+        .caixa {
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            background-color: white;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .caixa h1,
+        .caixa h2 {
+            color: #065F46;
+            margin-bottom: 15px;
+        }
+
+        .caixa p {
+            color: #444;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* NOME DO USUÁRIO EM TODAS AS TELAS */
+        .nome-usuario {
+            color: #059669 !important;
+            font-weight: bold;
+            font-size: 17px;
+            margin-bottom: 20px !important;
+        }
+
+        /* TELA 3: CADASTRO */
+        #perfil {
+            background-color: #065F46;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            padding: 13px;
+            margin: 12px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #059669;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.85;
+            transform: translateY(-1px);
+        }
+
+        .botao-voltar {
+            background-color: #555;
+        }
+
+        /* TELA 4: MENU */
+        #painel {
+            background-color: #064E3B;
+            color: white;
+        }
+
+        #painel h1 {
+            margin-bottom: 12px;
+        }
+
+        #saudacaoPainel {
+            margin-bottom: 25px;
+        }
+
+        .menu {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .botao-menu {
+            padding: 20px;
+            margin: 8px 0;
+            background-color: white;
+            color: #064E3B;
+            font-size: 18px;
+            border: 2px solid #86EFAC;
+        }
+
+        /* MEU DINHEIRO: AZUL */
+        #dinheiro {
+            background-color: #846fe2;
+        }
+
+        /* DESPESAS: VERMELHO */
+        #despesas {
+            background-color: #d84ac5;
+        }
+
+        /* RESUMOS: ROXO */
+        #resumos {
+            background-color: #55e7ec;
+        }
+
+        /* METAS: VERDE-AZULADO */
+        #metas {
+            background-color: #0F766E;
+        }
+
+        .resultado {
+            margin-top: 15px;
+            padding: 12px;
+            background-color: #F0FDF4;
+            color: #166534;
+            border-radius: 8px;
+            overflow-wrap: anywhere;
+        }
+
+        .item-lista {
+            margin-top: 10px;
+            padding: 12px;
+            background-color: #F3F4F6;
+            color: #222;
+            border-radius: 8px;
+            text-align: left;
+        }
+
+        .valor-grande {
+            font-size: 25px;
+            font-weight: bold;
+            color: #065F46;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 500px) {
+            .caixa {
+                padding: 25px 18px;
+            }
+
+            #inicio h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TELA 1: BOAS-VINDAS -->
+    <section id="inicio" class="tela ativa"
+        onclick="mostrarTela('financas')">
+        <div>
+            <h1>Seja bem-vindo!</h1>
+            <p>Clique em qualquer lugar para continuar.</p>
+        </div>
+    </section>
+
+    <!-- TELA 2: APRESENTAÇÃO -->
+    <section id="financas" class="tela"
+        onclick="mostrarTela('perfil')">
+        <div class="caixa">
+            <h1>Organize suas finanças</h1>
+            <p>
+                Controle seu dinheiro, acompanhe suas despesas,
+                veja seus resumos e crie metas financeiras.
+            </p>
+            <p><strong>Clique em qualquer lugar para continuar.</strong></p>
+        </div>
+    </section>
+
+    <!-- TELA 3: CADASTRO -->
+    <section id="perfil" class="tela">
+        <div class="caixa">
+            <h1>Vamos nos conhecer</h1>
+            <p>Preencha seus dados para personalizar sua experiência.</p>
+
+            <form onsubmit="entrarNoPainel(event)">
+                <label for="nome">Qual é o seu nome?</label>
+                <input
+                    type="text"
+                    id="nome"
+                    placeholder="Digite seu nome"
+                    maxlength="60"
+                    required
+                >
+
+                <label for="idade">Qual é a sua idade?</label>
+                <input
+                    type="number"
+                    id="idade"
+                    placeholder="Digite sua idade"
+                    min="1"
+                    max="120"
+                    required
+                >
+
+                <button type="submit">Continuar</button>
+            </form>
+
+            <button class="botao-voltar"
+                type="button"
+                onclick="mostrarTela('financas')">
+                Voltar
+            </button>
+        </div>
+    </section>
+
+    <!-- TELA 4: MENU PRINCIPAL -->
+    <section id="painel" class="tela">
+        <div class="menu">
+            <h1>Minha área financeira</h1>
+            <p id="saudacaoPainel">O que você deseja acessar?</p>
+
+            <button class="botao-menu"
+                onclick="mostrarTela('dinheiro')">
+                💰 Meu dinheiro
+            </button>
+
+            <button class="botao-menu"
+                onclick="mostrarTela('despesas')">
+                🧾 Despesas
+            </button>
+
+            <button class="botao-menu"
+                onclick="atualizarResumo(); mostrarTela('resumos')">
+                📊 Resumos
+            </button>
+
+            <button class="botao-menu"
+                onclick="mostrarTela('metas')">
+                🎯 Metas
+            </button>
+        </div>
+    </section>
+
+    <!-- TELA 5: MEU DINHEIRO -->
+    <section id="dinheiro" class="tela">
+        <div class="caixa">
+            <h2>💰 Meu pataco</h2>
+            <p class="nome-usuario"></p>
+            <p>Informe quanto voce recebe.</p>
+
+            <form onsubmit="salvarSaldo(event)">
+                <label for="saldoInicial">Pataco disponível (R$)</label>
+                <input
+                    type="number"
+                    id="saldoInicial"
+                    placeholder="Ex.: 1500.00"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+                <button type="submit">Salvar meu saldo</button>
+            </form>
+
+            <div class="resultado">
+                <p>Seu saldo informado:</p>
+                <div class="valor-grande" id="saldoAtual">R$ 0,00</div>
+            </div>
+
+            <button class="botao-voltar"
+                onclick="mostrarTela('painel')">
+                Voltar ao menu
+            </button>
+        </div>
+    </section>
+
+    <!-- TELA 6: DESPESAS -->
+    <section id="despesas" class="tela">
+        <div class="caixa">
+            <h2>🧾 Minhas despesas</h2>
+            <p class="nome-usuario"></p>
+            <p>Registre os gastos que você teve.</p>
+
+            <form onsubmit="adicionarDespesa(event)">
+                <label for="nomeDespesa">Nome da despesa</label>
+                <input
+                    type="text"
+                    id="nomeDespesa"
+                    placeholder="Ex.: Alimentação"
+                    maxlength="100"
+                    required
+                >
+
+                <label for="valorDespesa">Valor da despesa (R$)</label>
+                <input
+                    type="number"
+                    id="valorDespesa"
+                    placeholder="Ex.: 35.50"
+                    min="0.01"
+                    step="0.01"
+                    required
+                >
+
+                <button type="submit">Adicionar despesa</button>
+            </form>
+
+            <div class="resultado">
+                <p>Total de despesas:</p>
+                <div class="valor-grande" id="totalDespesas">
+                    R$ 0,00
+                </div>
+            </div>
+
+            <h3 style="margin-top: 20px;">Despesas registradas</h3>
+            <div id="listaDespesas"></div>
+
+            <button class="botao-voltar"
+                onclick="mostrarTela('painel')">
+                Voltar ao menu
+            </button>
+        </div>
+    </section>
+
+    <!-- TELA 7: RESUMOS -->
+    <section id="resumos" class="tela">
+        <div class="caixa">
+            <h2>📊 Resumo financeiro</h2>
+            <p class="nome-usuario"></p>
+            <p>Acompanhe a situação das suas finanças.</p>
+
+            <div class="item-lista">
+                <strong>Saldo informado:</strong>
+                <p id="resumoSaldo">Não informado</p>
+            </div>
+
+            <div class="item-lista">
+                <strong>Total de despesas:</strong>
+                <p id="resumoDespesas">R$ 0,00</p>
+            </div>
+
+            <div class="item-lista">
+                <strong>Saldo após as despesas:</strong>
+                <p id="resumoFinal">R$ 0,00</p>
+            </div>
+
+            <div class="item-lista">
+                <strong>Metas cadastradas:</strong>
+                <p id="resumoMetas">0</p>
+            </div>
+
+            <button onclick="atualizarResumo()">
+                Atualizar resumo
+            </button>
+
+            <button class="botao-voltar"
+                onclick="mostrarTela('painel')">
+                Voltar ao menu
+            </button>
+        </div>
+    </section>
+
+    <!-- TELA 8: METAS -->
+    <section id="metas" class="tela">
+        <div class="caixa">
+            <h2>🎯 Minhas metas</h2>
+            <p class="nome-usuario"></p>
+            <p>Defina objetivos para organizar seu dinheiro.</p>
+
+            <form onsubmit="salvarMeta(event)">
+                <label for="nomeMeta">Qual é a sua meta?</label>
+                <input
+                    type="text"
+                    id="nomeMeta"
+                    placeholder="Ex.: Comprar um computador"
+                    maxlength="100"
+                    required
+                >
+
+                <label for="valorMeta">Quanto você precisa? (R$)</label>
+                <input
+                    type="number"
+                    id="valorMeta"
+                    placeholder="Ex.: 3000.00"
+                    min="0.01"
+                    step="0.01"
+                    required
+                >
+
+                <button type="submit">Salvar meta</button>
+            </form>
+
+            <h3 style="margin-top: 20px;">Minhas metas cadastradas</h3>
+            <div id="listaMetas"></div>
+
+            <button class="botao-voltar"
+                onclick="mostrarTela('painel')">
+                Voltar ao menu
+            </button>
+        </div>
+    </section>
+
+    <script>
+        // Dados do usuário
+        let nomeUsuario = "";
+        let idadeUsuario = 0;
+
+        // Dados financeiros
+        let saldo = 0;
+        let saldoInformado = false;
+        let despesas = [];
+        let metas = [];
+
+        // Formata valores em reais
+        function formatarMoeda(valor) {
+            return valor.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+            });
+        }
+
+        // Troca de tela
+        function mostrarTela(idTela) {
+            document.querySelectorAll(".tela").forEach(function(tela) {
+                tela.classList.remove("ativa");
+            });
+
+            document.getElementById(idTela).classList.add("ativa");
+        }
+
+        // Atualiza o nome em todas as telas financeiras
+        function atualizarNomes() {
+            document.querySelectorAll(".nome-usuario").forEach(function(elemento) {
+                elemento.textContent = "Olá, " + nomeUsuario + "! 👋";
+            });
+        }
+
+        // Recebe nome e idade
+        function entrarNoPainel(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById("nome").value.trim();
+            const idade = Number(document.getElementById("idade").value);
+
+            if (nome === "") {
+                alert("Digite seu nome para continuar.");
+                return;
+            }
+
+            if (!Number.isInteger(idade) || idade < 1 || idade > 120) {
+                alert("Digite uma idade válida.");
+                return;
+            }
+
+            nomeUsuario = nome;
+            idadeUsuario = idade;
+
+            document.getElementById("saudacaoPainel").textContent =
+                "Olá, " + nomeUsuario + "! O que você deseja acessar?";
+
+            atualizarNomes();
+            mostrarTela("painel");
+        }
+
+        // Salva o saldo
+        function salvarSaldo(event) {
+            event.preventDefault();
+
+            const valor = Number(
+                document.getElementById("saldoInicial").value
+            );
+
+            if (!Number.isFinite(valor) || valor < 0) {
+                alert("Digite um saldo válido.");
+                return;
+            }
+
+            saldo = valor;
+            saldoInformado = true;
+
+            document.getElementById("saldoAtual").textContent =
+                formatarMoeda(saldo);
+
+            atualizarResumo();
+            alert("Seu saldo foi salvo!");
+        }
+
+        // Soma as despesas
+        function calcularDespesas() {
+            return despesas.reduce(function(total, despesa) {
+                return total + despesa.valor;
+            }, 0);
+        }
+
+        // Adiciona uma despesa
+        function adicionarDespesa(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById("nomeDespesa").value.trim();
+            const valor = Number(
+                document.getElementById("valorDespesa").value
+            );
+
+            if (nome === "" || !Number.isFinite(valor) || valor <= 0) {
+                alert("Preencha a despesa e informe um valor válido.");
+                return;
+            }
+
+            despesas.push({
+                nome: nome,
+                valor: valor
+            });
+
+            document.getElementById("nomeDespesa").value = "";
+            document.getElementById("valorDespesa").value = "";
+
+            mostrarDespesas();
+            atualizarResumo();
+        }
+
+        // Mostra as despesas cadastradas
+        function mostrarDespesas() {
+            const lista = document.getElementById("listaDespesas");
+            lista.replaceChildren();
+
+            despesas.forEach(function(despesa) {
+                const item = document.createElement("div");
+                item.className = "item-lista";
+
+                const nome = document.createElement("strong");
+                nome.textContent = despesa.nome;
+
+                const valor = document.createElement("p");
+                valor.textContent = formatarMoeda(despesa.valor);
+
+                item.appendChild(nome);
+                item.appendChild(valor);
+                lista.appendChild(item);
+            });
+
+            document.getElementById("totalDespesas").textContent =
+                formatarMoeda(calcularDespesas());
+        }
+
+        // Salva uma meta
+        function salvarMeta(event) {
+            event.preventDefault();
+
+            const nome = document.getElementById("nomeMeta").value.trim();
+            const valor = Number(
+                document.getElementById("valorMeta").value
+            );
+
+            if (nome === "" || !Number.isFinite(valor) || valor <= 0) {
+                alert("Preencha a meta e informe um valor válido.");
+                return;
+            }
+
+            metas.push({
+                nome: nome,
+                valor: valor
+            });
+
+            document.getElementById("nomeMeta").value = "";
+            document.getElementById("valorMeta").value = "";
+
+            mostrarMetas();
+            atualizarResumo();
+        }
+
+        // Mostra as metas cadastradas
+        function mostrarMetas() {
+            const lista = document.getElementById("listaMetas");
+            lista.replaceChildren();
+
+            metas.forEach(function(meta) {
+                const item = document.createElement("div");
+                item.className = "item-lista";
+
+                const nome = document.createElement("strong");
+                nome.textContent = meta.nome;
+
+                const valor = document.createElement("p");
+                valor.textContent = "Objetivo: " + formatarMoeda(meta.valor);
+
+                item.appendChild(nome);
+                item.appendChild(valor);
+                lista.appendChild(item);
+            });
+        }
+
+        // Atualiza o resumo financeiro
+        function atualizarResumo() {
+            const total = calcularDespesas();
+            const saldoBase = saldoInformado ? saldo : 0;
+            const saldoFinal = saldoBase - total;
+
+            document.getElementById("resumoSaldo").textContent =
+                saldoInformado ? formatarMoeda(saldo) : "Não informado";
+
+            document.getElementById("resumoDespesas").textContent =
+                formatarMoeda(total);
+
+            document.getElementById("resumoFinal").textContent =
+                formatarMoeda(saldoFinal);
+
+            document.getElementById("resumoMetas").textContent =
+                metas.length;
+        }
+    </script>
+
+</body>
+</html>
